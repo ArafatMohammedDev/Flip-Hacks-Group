@@ -7,9 +7,7 @@ import {
     set,
     get,
     onChildAdded,
-    push,
-    query,
-    limitToLast
+    push
 } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 import { groupObject } from "./app.js";
 
@@ -29,10 +27,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
-const localUsername = localStorage.getItem('firstName');
-let clickedUser = null;
 
-// Fetch users from the database and display in the user list
+const localUsername = localStorage.getItem('firstName');
+console.log(localUsername); // Sender’s username
+let clickedUser = null;  // Recipient's name, stored from click events
+
 // Fetch users from the database and display in the user list
 function loadUsers() {
     const usersRef = ref(database, "groups");
@@ -40,74 +39,38 @@ function loadUsers() {
     get(usersRef)
         .then((snapshot) => {
             if (snapshot.exists()) {
-                const users = snapshot.val();
+                const users = snapshot.val(); // Fetch the actual users from the database
                 const userDiv = document.querySelector(".user-list");
+
+                // Clear previous users before adding new ones
+                userDiv.innerHTML = "";
+
+
+                const key = users[localUsername];
+                const group = users[key];
                 const members = groupObject.members;
-                const userTimestampList = [];
 
-                // Fetch last message timestamp for each user
-                const timestampPromises = members.map((element) => {
-                    return new Promise((resolve) => {
-                        const sentText = query(ref(database, `messages/${localUsername}_${element}`), limitToLast(1));
-                        const receivedText = query(ref(database, `messages/${element}_${localUsername}`), limitToLast(1));
+                // Loop through the members of the group
+                members.forEach(element => {
+                    // Create a new div for each user
+                    const userElement = document.createElement("div");
+                    userElement.classList.add("user");
+                    userElement.setAttribute("data-username", key);
+                    userElement.innerHTML = `
+                        <strong class="sender-name">${element}</strong>
+                        <div class="last-message">Loading last message...</div>
+                    `;
 
-                        Promise.all([get(sentText), get(receivedText)])
-                            .then(([sentSnapshot, receivedSnapshot]) => {
-                                let lastTimestamp = 0;
+                    // Append the user element to the userDiv
+                    userDiv.appendChild(userElement);
 
-                                if (sentSnapshot.exists()) {
-                                    sentSnapshot.forEach((childSnapshot) => {
-                                        const messageData = childSnapshot.val();
-                                        if (messageData.timestamp > lastTimestamp) {
-                                            lastTimestamp = messageData.timestamp;
-                                        }
-                                    });
-                                }
-
-                                if (receivedSnapshot.exists()) {
-                                    receivedSnapshot.forEach((childSnapshot) => {
-                                        const messageData = childSnapshot.val();
-                                        if (messageData.timestamp > lastTimestamp) {
-                                            lastTimestamp = messageData.timestamp;
-                                        }
-                                    });
-                                }
-
-                                // Store user and last timestamp for sorting
-                                userTimestampList.push({ username: element, timestamp: lastTimestamp });
-                                resolve();
-                            });
+                    // Add click event to open chat for the selected user
+                    userElement.addEventListener("click", () => {
+                        openChat(element, key);  // Set clickedUser when opening chat
+                        localStorage.setItem("firstnamewhenclicked", element);
                     });
                 });
-
-                // Wait for all timestamps to be fetched, then sort and display
-                Promise.all(timestampPromises).then(() => {
-                    // Sort users by timestamp in descending order
-                    userTimestampList.sort((a, b) => b.timestamp - a.timestamp);
-
-                    // Clear previous users
-                    userDiv.innerHTML = "";
-
-                    // Display sorted users and fetch last message
-                    userTimestampList.forEach(({ username }) => {
-                        const userElement = document.createElement("div");
-                        userElement.classList.add("user");
-                        userElement.innerHTML = `
-                            <strong class="sender-name">${username}</strong>
-                            <div class="last-message">Loading last message...</div>
-                        `;
-                        userDiv.appendChild(userElement);
-
-                        // Fetch and display the last message for each user
-                        fetchLastMessage(username, userElement);
-
-                        // Open chat on click
-                        userElement.addEventListener("click", () => {
-                            openChat(username);
-                            localStorage.setItem("firstnamewhenclicked", username);
-                        });
-                    });
-                });
+            
             } else {
                 alert("No user data found.");
             }
@@ -117,48 +80,26 @@ function loadUsers() {
         });
 }
 
-// Fetch the last message sent or received for a specific user
-function fetchLastMessage(username, userElement) {
-    const lastMessageDiv = userElement.querySelector(".last-message");
+// Function to open a chat with the selected user
+function openChat(firstName, username) {
+    clickedUser = firstName;  // Update clickedUser based on selected contact
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.innerHTML = "";  // Clear existing messages
+    messagesDiv.innerHTML = `<h2 class="chat-with">Chatting with ${firstName}</h2>`;
 
-    // Get last sent and received messages
-    const sentText = query(ref(database, `messages/${localUsername}_${username}`), limitToLast(1));
-    const receivedText = query(ref(database, `messages/${username}_${localUsername}`), limitToLast(1));
+    // Load existing messages for the current user
+    const sentText = ref(database, `messages/${localUsername}_${clickedUser}`); 
+    const recivedText = ref(database, `messages/${clickedUser}_${localUsername}`);
 
-    Promise.all([get(sentText), get(receivedText)])
-        .then(([sentSnapshot, receivedSnapshot]) => {
-            let lastMessage = null;
-            let lastTimestamp = 0;
+    onChildAdded(sentText, (snapshot) => {
+        const messageData = snapshot.val();
 
-            // Check sent messages
-            if (sentSnapshot.exists()) {
-                sentSnapshot.forEach((childSnapshot) => {
-                    const messageData = childSnapshot.val();
-                    if (messageData.timestamp > lastTimestamp) {
-                        lastMessage = messageData.text;
-                        lastTimestamp = messageData.timestamp;
-                    }
-                });
-            }
-
-            // Check received messages
-            if (receivedSnapshot.exists()) {
-                receivedSnapshot.forEach((childSnapshot) => {
-                    const messageData = childSnapshot.val();
-                    if (messageData.timestamp > lastTimestamp) {
-                        lastMessage = messageData.text;
-                        lastTimestamp = messageData.timestamp;
-                    }
-                });
-            }
-
-            // Update the last message display
-            lastMessageDiv.textContent = lastMessage ? lastMessage : "No messages yet.";
-        })
-        .catch((error) => {
-            console.error("Error fetching last message: ", error);
-        });
-}
+        console.log("sentText: ", messageData);
+        if (messageData.receptor === clickedUser || messageData.sender === clickedUser) {
+            displayMessage(messageData.text, messageData.sender === localUsername ? 'sender' : 'receiver', messageData.timestamp);
+        }
+        
+    });
 
 function openChat(firstName, username) {
     clickedUser = firstName;
@@ -204,25 +145,29 @@ function openChat(firstName, username) {
             });
         });
     });
+}
 
-    onChildAdded(sentText, (snapshot) => {
+
+    console.log("clickedUser: ", `messages/${clickedUser}_${localUsername}`);
+
+    onChildAdded(recivedText, (snapshot) => {
         const messageData = snapshot.val();
 
-        console.log("sentText: ", messageData);
+        console.log("recivedText: ", messageData);
         if (messageData.receptor === clickedUser || messageData.sender === clickedUser) {
-            displayMessage(messageData.text, messageData.sender === localUsername ? 'sender' : 'receiver', messageData.timestamp);
+            displayMessage(messageData.text, messageData.receptor === localUsername ? 'receiver' : 'sender', messageData.timestamp);
         }
         
     });
 }
 
-
-// Display a message in the chat
+// Function to display a message in the chat
 function displayMessage(text, type, timestamp) {
     const messagesDiv = document.getElementById("messages");
     const messageElement = document.createElement("div");
     messageElement.classList.add("message", type);
 
+    // Format the timestamp
     const date = new Date(timestamp);
     const options = { hour: '2-digit', minute: '2-digit' };
     const formattedTimestamp = date.toLocaleTimeString([], options);
@@ -233,19 +178,15 @@ function displayMessage(text, type, timestamp) {
     `;
 
     messagesDiv.appendChild(messageElement);
-    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;  // Scroll to the bottom
 }
 
-// Helper function to format last message with a max of 5 words
-function formatLastMessage(text) {
-    const words = text.split(" ");
-    return words.length > 5 ? words.slice(0, 5).join(" ") + "…" : text;
-}
-
+console.log("localUsername: ", localUsername);
 // Send message button functionality
 document.getElementById("sendButton").addEventListener("click", () => {
     const messageText = document.getElementById("chatInput").value;
     if (messageText.trim() !== "" && localUsername && clickedUser) { 
+        // Path for sender and receiver
         const messagePath = `messages/${localUsername}_${clickedUser}`;
         const messageObject = {
             text: messageText,
@@ -259,9 +200,6 @@ document.getElementById("sendButton").addEventListener("click", () => {
         set(newMessageRef, messageObject)
             .then(() => {
                 console.log("Message sent successfully.");
-                
-                // Update the last message display for the clicked user
-                updateLastMessageDisplay(clickedUser, messageText);
             })
             .catch((error) => {
                 console.error("Error sending message: ", error);
@@ -274,20 +212,10 @@ document.getElementById("sendButton").addEventListener("click", () => {
     }
 });
 
-// Helper function to update the last message display
-function updateLastMessageDisplay(username, messageText) {
-    const userElements = document.querySelectorAll(".user");
-    userElements.forEach((userElement) => {
-        if (userElement.querySelector(".sender-name").textContent === username) {
-            const lastMessageDiv = userElement.querySelector(".last-message");
-            lastMessageDiv.textContent = formatLastMessage(messageText); // Ensure to format the message
-        }
-    });
-}
-
-
-
 // Load users on page load
 window.onload = function () {
     loadUsers();
 };
+
+
+
