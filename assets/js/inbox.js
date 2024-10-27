@@ -10,6 +10,8 @@ import {
     push
 } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 import { groupObject } from "./app.js";
+import { serverTimestamp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
 
 // Firebase configuration
 const firebaseConfig = {
@@ -194,17 +196,33 @@ document.getElementById("chatInput").addEventListener("keydown", (event) => {
     }
 });
 
+// Function to get the current UTC time from an API
+async function getCurrentTime() {
+    try {
+        const response = await fetch('http://worldtimeapi.org/api/timezone/Etc/UTC');
+        const data = await response.json();
+        return new Date(data.utc_datetime).getTime();  // Returns timestamp in milliseconds
+    } catch (error) {
+        console.error('Error fetching time:', error);
+        return Date.now();  // Fallback to local time if API fails
+    }
+}
+
 // Function to handle sending a message
-function sendMessage() {
+async function sendMessage() {
     const messageText = document.getElementById("chatInput").value;
     if (messageText.trim() !== "" && localUsername && clickedUser) { 
         // Path for sender and receiver
         const messagePath = `messages/${localUsername}_${clickedUser}`;
+        
+        // Fetch the current time
+        const timestamp = await getCurrentTime();  // Use API time
+
         const messageObject = {
             text: messageText,
             sender: localUsername,
             receptor: clickedUser,
-            timestamp: Date.now(),
+            timestamp: timestamp,
         };
 
         // Push message to Firebase
@@ -223,6 +241,7 @@ function sendMessage() {
         console.warn("Message is empty or no chat user selected.");
     }
 }
+
 
 // Load users on page load
 window.onload = function () {
