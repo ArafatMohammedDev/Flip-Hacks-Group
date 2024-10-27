@@ -247,8 +247,9 @@ $searchField.addEventListener("keydown", e => {
 
 
 const groupStorage = localStorage.getItem("group");
+console.log(groupStorage)
 export const groupObject = JSON.parse(groupStorage); // This will cause the error
-
+console.log(groupObject)
 
 /**
  * Forked repository
