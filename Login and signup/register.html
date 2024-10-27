@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In Page</title>
+    <style>
+        /* General Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            animation: backgroundAnimation 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes backgroundAnimation {
+            0% { background: linear-gradient(135deg, #ff9a9e, #fad0c4); }
+            50% { background: linear-gradient(135deg, #a1c4fd, #c2e9fb); }
+            100% { background: linear-gradient(135deg, #ffecd2, #fcb69f); }
+        }
+
+        /* Container Styles */
+        .signin-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Input Styles */
+        .signin-container input[type="text"], .signin-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .signin-container input[type="text"]:focus, .signin-container input[type="password"]:focus {
+            border-color: #ff9a9e;
+            box-shadow: 0 0 10px rgba(255, 154, 158, 0.5);
+        }
+
+        /* Button Styles */
+        .signin-container button {
+            width: 100%;
+            padding: 10px;
+            background: #ff9a9e;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .signin-container button:hover {
+            background: #ff6b6b;
+        }
+
+        /* Error Message */
+        .error-message {
+            color: red;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+        }
+        textarea{
+            width: 100%;
+            height: 200px;
+            font-size: 15px;
+            padding: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="signin-container">
+        <h2>Register</h2>
+        <form id="signin-form">
+            <input type="text" id="field" placeholder="Your field" required />
+            <input type="text" id="school" placeholder="Your School">
+            <input type="text" id="grade" placeholder="Your Grade" required>
+            <input type="text" id="subject" placeholder="What Subject Are You Good At? (optional)">
+            <input type="text" id="Team" placeholder="Which Team Do You Want To join?*" required>
+            <textarea name="description" id="description" placeholder="Description"></textarea>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script type="module" >
+       import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getDatabase, ref, set, get } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js';
+
+  // Firebase configuration (replace with your actual config)
+const firebaseConfig = {
+    apiKey: "AIzaSyCVIym8X-GDRx6_1256dtVZdo3hIm7TRgI",
+    authDomain: "flipper-hack.firebaseapp.com",
+    databaseURL: "https://flipper-hack-default-rtdb.firebaseio.com",
+    projectId: "flipper-hack",
+    storageBucket: "flipper-hack.appspot.com",
+    messagingSenderId: "9118741906",
+    appId: "1:9118741906:web:d8860d3094a46bafd37d4b",
+    measurementId: "G-EYLLFHW5XS"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Retrieve username from local storage
+const username = localStorage.getItem('username'); // Ensure this is set during login
+console.log("Fetching data for username:", username); // This should not be null now
+
+// Reference to the user data in the database
+const userRef = ref(database, `users/${username}`);
+
+// Get the user data
+get(userRef)
+    .then((snapshot) => {
+        if (snapshot.exists()) {
+            const userData = snapshot.val(); // Assign retrieved data
+            console.log("User data retrieved:", userData);
+
+            // JavaScript to handle form submission after retrieving user data
+            document.getElementById('signin-form').addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent form submission
+
+                // Get the values from the input fields
+                const field = document.getElementById('field').value;
+                const school = document.getElementById('school').value;
+                const grade = document.getElementById('grade').value;
+                const Team = document.getElementById('Team').value;
+                const description = document.getElementById('description').value;
+
+                // Prepare user data with additional fields
+                const securityCode = Math.floor(10000 + Math.random() * 90000); // Generates a 5-digit number
+
+                const userDataA = {
+                    FullName: `${userData.firstName} ${userData.lastName}`,
+                    SecurityCode: userData.securityCode,
+                    field: field,
+                    school: school,
+                    grade: grade,
+                    subject: document.getElementById('subject').value,
+                    Team: Team,
+                    description: description
+                };
+
+                // Save user data to Firebase
+                set(ref(database, `Registration/${securityCode} ${userData.firstName}`), userDataA)
+                    .then(() => {
+                        localStorage.setItem('field', field); // Store the field in local storage
+                        window.location.href = '../userAcc.html'; // Redirect to login.html
+                    })
+                    .catch((error) => {
+                        console.error("Error saving user data: ", error);
+                    });
+            });
+        } else {
+            console.error("No user data found.");
+            document.getElementById('user-data').innerText = "No user data found.";
+        }
+    })
+    .catch((error) => {
+        console.error("Error fetching user data: ", error);
+    });
+
+    </script>
+
+</body>
+</html>

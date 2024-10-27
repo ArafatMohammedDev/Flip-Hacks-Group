@@ -1,0 +1,213 @@
+body,
+html {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.messenger-container {
+    display: flex;
+    height: 100vh;
+    width: 100%;
+}
+
+.user-list {
+    width: 30%;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+}
+.user {
+    padding: 15px;
+    margin: 5px 0; /* Add margin for spacing between items */
+    cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.3s;
+    color: #333;
+}
+
+.user-list .user:hover {
+    background: rgb(255, 255, 255);
+}
+
+.chat-container {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.messages {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.message {
+    margin-bottom: 10px;
+}
+
+.message.sender {
+    text-align: right;
+}
+
+.message-text {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 5px;
+    max-width: 70%;
+}
+
+.message.sender .message-text {
+    background: #007bff;
+    color: white;
+}
+
+.message.receiver .message-text {
+    background: #89ee30;
+}
+
+.input-container {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid #ddd;
+    margin-bottom: 180px;
+}
+
+.input-container input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    color: rgb(0, 0, 0);
+}
+
+.input-container button {
+    margin-left: 10px;
+    padding: 10px 15px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.input-container button:hover {
+    background: #0056b3;
+}
+
+h2 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+    color: #333;
+}
+
+.last-message {
+    color: #9b9a9a;
+    /* Grey color */
+    font-size: 16px;
+    margin-top: 5px;
+    /* Space between name and last message */
+}
+.sender-name{
+    color: #333;
+    font-size: 20px;
+}
+.chat-with{
+    color: rgb(0, 0, 0);
+    position: fixed;
+    top: 30px;
+    z-index: 2000;
+}
+/* styles.css */
+
+/* Notification badge */
+.notification-icon {
+    position: relative;
+    cursor: pointer;
+}
+
+.notification-icon ion-icon {
+    font-size: 24px;
+    color: var(--eerie-black-3);
+}
+
+.notification-count {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background-color: var(--dark-mint);
+    color: white;
+    border-radius: 50%;
+    padding: 5px 10px;
+    font-size: 12px;
+    font-weight: bold;
+    display: none; /* Hide initially when there are no notifications */
+}
+
+main{
+    margin-bottom: 0;
+}
+/* Styles for devices with a max-width of 768px (tablets and mobile devices) */
+@media (max-width: 768px) {
+    .messenger-container {
+        flex-direction: column;
+        /* Stack user list above the chat area */
+        height: auto;
+        /* Allow height to adjust based on content */
+    }
+
+    .user-list {
+        width: 100%;
+        /* Full width on smaller screens */
+        border-right: none;
+        /* Remove the right border */
+        border-bottom: 1px solid #ddd;
+        /* Add a bottom border */
+        max-height: 40vh;
+        /* Limit height for overflow */
+        overflow-y: auto;
+        /* Enable scrolling */
+    }
+
+    .chat-container {
+        width: 100%;
+        /* Full width on smaller screens */
+    }
+
+    .input-container {
+        flex-direction: column;
+        /* Stack input and button */
+    }
+
+    .input-container input {
+        margin-bottom: 10px;
+        /* Space between input and button */
+        width: 100%;
+        /* Full width input */
+    }
+
+    .input-container button {
+        width: 100%;
+        /* Full width button */
+    }
+}
+
+/* Styles for devices with a max-width of 480px (mobile devices) */
+@media (max-width: 480px) {
+    .user-list .user {
+        font-size: 14px;
+        /* Smaller font size for users */
+    }
+
+    .message-text {
+        font-size: 14px;
+        /* Smaller font size for messages */
+        padding: 8px;
+        /* Smaller padding */
+    }
+}

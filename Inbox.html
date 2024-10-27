@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inbox</title>
+  <meta name="description" content="This is a Hackathon website made for Flipper school by Lewi zelalem." />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css>
+  <!--
+        - favicon
+        -->
+  <link rel="shortcut icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="assets/css/inbox.css">
+
+  
+  <!-- 
+    - theme js
+  -->
+  <script src="./assets/js/theme.js"></script>
+
+  <!--
+        - google fonts link
+        -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&family=Forum&display=swap"
+    rel="stylesheet" />
+  <script src="https://kit.fontawesome.com/6d920f641e.js" crossorigin="anonymous"></script>
+  <!--
+        - custom css link
+        -->
+  <link rel="stylesheet" href="assets/css/styleInbox.css" />
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- 
+  - material icon link
+-->
+<link rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+
+<!-- 
+  - custom css link
+-->
+<link rel="stylesheet" href="./assets/css/style.css">
+
+<!-- 
+  - custom js link
+-->
+<script src="./assets/js/app.js" type="module"></script>
+
+</head>
+
+<body>
+
+
+  <!-- 
+    - #SKIP TO CONTENT
+  -->
+
+  <a href="#main" class="skip-to-content">Skip to Content</a>
+
+
+
+
+
+  <!-- 
+    - #HEADER
+  -->
+
+  <header class="header" data-header>
+    <div class="container">
+
+      <a href="/" class="logo">
+        <span class="text-primary">Git</span>Finder
+      </a>
+
+      <div class="header-search">
+
+        <button class="icon-btn search-toggler" aria-controls="searchBox" aria-expanded="false"
+          aria-label="Toggle search" data-search-toggler>
+          <span class="material-symbols-rounded search-icon" aria-hidden="true">search</span>
+
+          <span class="material-symbols-rounded close-icon" aria-hidden="true">arrow_back</span>
+        </button>
+
+        <div class="search-box" id="searchBox">
+
+          <span class="material-symbols-rounded leading-icon" aria-hidden="true">search</span>
+
+          <input type="search" name="search" aria-label="Search github username" placeholder="Search username*"
+            class="search-field label-1" data-search-field>
+
+          <button class="search-btn" aria-label="Search submit" data-search-submit>
+            <span class="material-symbols-rounded" aria-hidden="true">search</span>
+
+            <span class="label-1">Search</span>
+          </button>
+
+        </div>
+
+      </div>
+
+      <button class="icon-btn theme-btn" aria-pressed="false" aria-label="Toggle dark and light theme" data-theme-btn>
+        <span class="material-symbols-rounded sun-icon" aria-hidden="true">light_mode</span>
+
+        <span class="material-symbols-rounded moon-icon" aria-hidden="true">dark_mode</span>
+      </button>
+
+    </div>
+  </header>
+
+
+
+  <main class="main" id="main">
+    <div class="container">
+
+      <!-- 
+        - #PROFILE
+      -->
+
+      <section class="profile" data-profile-card></section>
+
+
+
+
+
+      <!-- 
+        - #TAB 
+      -->
+
+      <section class="tab-container">
+
+        <div class="tab-list" aria-label="Tab navigation" role="tablist">
+
+          
+          <a href="index.html"><button class="tab-btn" aria-selected="false" role="tab" id="tab-1" tabindex="0" aria-controls="panel-1"
+            data-tab-btn>Members</button></a>
+
+          <a href="Inbox.html"><button class="tab-btn message-panel" aria-selected="true" role="tab" id="tab-2" tabindex="-1" aria-controls="panel-2"
+            data-tab-btn data-forked-tab-btn  class="tab-2">Messages</button></a>
+
+          <button class="tab-btn" aria-selected="false" role="tab" id="tab-3" tabindex="-1" aria-controls="panel-3"
+            data-tab-btn data-follower-tab-btn>Followers</button>
+
+          <button class="tab-btn" aria-selected="false" role="tab" id="tab-4" tabindex="-1" aria-controls="panel-4"
+            data-tab-btn data-following-tab-btn>Following</button>
+
+
+        </div>
+
+
+      </section>
+
+
+
+
+
+      <!-- 
+        - #ERROR CONTENT
+      -->
+
+      <section class="error" data-error></section>
+
+    </div>
+  </main>
+
+
+
+
+  <div class="messenger-container">
+    <div class="user-list" id="user-list">
+      <!-- User list will go here -->
+    </div>
+    <div class="chat-container">
+      <div class="messages" id="messages">
+        <!-- Chat messages will go here -->
+      </div>
+      <div class="input-container">
+        <input type="text" id="chatInput" placeholder="Type a message..." aria-label="Type your message" />
+        <button id="sendButton" aria-label="Send message">Send</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/js/scriptInbox.js"></script>
+  <script type="module" src="assets/js/inbox.js"></script>
+</body>
+
+</html>
