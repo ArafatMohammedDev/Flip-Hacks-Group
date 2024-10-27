@@ -183,7 +183,19 @@ function displayMessage(text, type, timestamp) {
 
 console.log("localUsername: ", localUsername);
 // Send message button functionality
-document.getElementById("sendButton").addEventListener("click", () => {
+// Send message button functionality
+document.getElementById("sendButton").addEventListener("click", sendMessage);
+
+// Add "Enter" key event to send message
+document.getElementById("chatInput").addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+        event.preventDefault(); // Prevent newline in the input field
+        sendMessage();          // Call the send message function
+    }
+});
+
+// Function to handle sending a message
+function sendMessage() {
     const messageText = document.getElementById("chatInput").value;
     if (messageText.trim() !== "" && localUsername && clickedUser) { 
         // Path for sender and receiver
@@ -210,7 +222,7 @@ document.getElementById("sendButton").addEventListener("click", () => {
     } else {
         console.warn("Message is empty or no chat user selected.");
     }
-});
+}
 
 // Load users on page load
 window.onload = function () {
