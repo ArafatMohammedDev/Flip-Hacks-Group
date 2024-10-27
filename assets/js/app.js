@@ -543,7 +543,7 @@ window.updateProfile = function (profileUrl) {
         </li>
 
         <li class="stats-item">
-          <span class="body">Team Number: </span> ${groupObject.members.length}
+          <span class="body">Team Number: </span> ${groupObject ? groupObject.members.length  : 'N/A'}
         </li>
 
         <li class="stats-item">
