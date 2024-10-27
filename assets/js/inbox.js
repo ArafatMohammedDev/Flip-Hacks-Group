@@ -84,6 +84,27 @@ function loadUsers() {
 
 // Function to open a chat with the selected user
 function openChat(firstName, username) {
+    clickedUser = firstName;  // Update clickedUser based on selected contact
+    const messagesDiv = document.getElementById("messages");
+    messagesDiv.innerHTML = "";  // Clear existing messages
+    messagesDiv.innerHTML = `<h2 class="chat-with">Chatting with ${firstName}</h2>`;
+
+    // Load existing messages for the current user
+    const sentText = ref(database, `messages/${localUsername}_${clickedUser}`); 
+    const recivedText = ref(database, `messages/${clickedUser}_${localUsername}`);
+
+    onChildAdded(sentText, (snapshot) => {
+        const messageData = snapshot.val();
+
+        console.log("sentText: ", messageData);
+        if (messageData.receptor === clickedUser || messageData.sender === clickedUser) {
+            displayMessage(messageData.text, messageData.sender === localUsername ? 'sender' : 'receiver', messageData.timestamp);
+        }
+        
+    });
+
+// Function to open a chat with the selected user
+function openChat(firstName, username) {
     clickedUser = firstName;
     const messagesDiv = document.getElementById("messages");
     messagesDiv.innerHTML = "";
@@ -130,6 +151,20 @@ function openChat(firstName, username) {
 }
 
 
+
+    console.log("clickedUser: ", `messages/${clickedUser}_${localUsername}`);
+
+    onChildAdded(recivedText, (snapshot) => {
+        const messageData = snapshot.val();
+
+        console.log("recivedText: ", messageData);
+        if (messageData.receptor === clickedUser || messageData.sender === clickedUser) {
+            displayMessage(messageData.text, messageData.receptor === localUsername ? 'receiver' : 'sender', messageData.timestamp);
+        }
+        
+    });
+}
+
 // Function to display a message in the chat
 function displayMessage(text, type, timestamp) {
     const messagesDiv = document.getElementById("messages");
@@ -163,33 +198,17 @@ document.getElementById("chatInput").addEventListener("keydown", (event) => {
     }
 });
 
-// Function to get the current UTC time from an alternative reliable API
-async function getCurrentTime() {
-    try {
-        const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC'); // Use HTTPS
-        if (!response.ok) throw new Error('Failed to fetch time');
-        const data = await response.json();
-        return new Date(data.utc_datetime).getTime(); // Returns timestamp in milliseconds
-    } catch (error) {
-        console.error('Error fetching time:', error);
-        return Date.now();  // Fallback to local time if the API fails
-    }
-}
-
-
 // Function to handle sending a message
-async function sendMessage() {
+function sendMessage() {
     const messageText = document.getElementById("chatInput").value;
     if (messageText.trim() !== "" && localUsername && clickedUser) { 
         // Path for sender and receiver
         const messagePath = `messages/${localUsername}_${clickedUser}`;
-        
-
         const messageObject = {
             text: messageText,
             sender: localUsername,
             receptor: clickedUser,
-            timestamp: timestamp,
+            timestamp: Date.now(),
         };
 
         // Push message to Firebase
@@ -208,7 +227,6 @@ async function sendMessage() {
         console.warn("Message is empty or no chat user selected.");
     }
 }
-
 
 // Load users on page load
 window.onload = function () {
