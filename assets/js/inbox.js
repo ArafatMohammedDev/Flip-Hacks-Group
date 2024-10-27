@@ -82,28 +82,6 @@ function loadUsers() {
         });
 }
 
-// Function to open a chat with the selected user
-function openChat(firstName, username) {
-    clickedUser = firstName;  // Update clickedUser based on selected contact
-    const messagesDiv = document.getElementById("messages");
-    messagesDiv.innerHTML = "";  // Clear existing messages
-    messagesDiv.innerHTML = `<h2 class="chat-with">Chatting with ${firstName}</h2>`;
-
-    // Load existing messages for the current user
-    const sentText = ref(database, `messages/${localUsername}_${clickedUser}`); 
-    const recivedText = ref(database, `messages/${clickedUser}_${localUsername}`);
-
-    onChildAdded(sentText, (snapshot) => {
-        const messageData = snapshot.val();
-
-        console.log("sentText: ", messageData);
-        if (messageData.receptor === clickedUser || messageData.sender === clickedUser) {
-            displayMessage(messageData.text, messageData.sender === localUsername ? 'sender' : 'receiver', messageData.timestamp);
-        }
-        
-    });
-
-// Function to open a chat with the selected user
 function openChat(firstName, username) {
     clickedUser = firstName;
     const messagesDiv = document.getElementById("messages");
@@ -151,20 +129,6 @@ function openChat(firstName, username) {
 }
 
 
-
-    console.log("clickedUser: ", `messages/${clickedUser}_${localUsername}`);
-
-    onChildAdded(recivedText, (snapshot) => {
-        const messageData = snapshot.val();
-
-        console.log("recivedText: ", messageData);
-        if (messageData.receptor === clickedUser || messageData.sender === clickedUser) {
-            displayMessage(messageData.text, messageData.receptor === localUsername ? 'receiver' : 'sender', messageData.timestamp);
-        }
-        
-    });
-}
-
 // Function to display a message in the chat
 function displayMessage(text, type, timestamp) {
     const messagesDiv = document.getElementById("messages");
@@ -187,8 +151,40 @@ function displayMessage(text, type, timestamp) {
 
 console.log("localUsername: ", localUsername);
 // Send message button functionality
-// Send message button functionality
-document.getElementById("sendButton").addEventListener("click", sendMessage);
+document.getElementById("sendButton").addEventListener("click", () => {
+    const messageText = document.getElementById("chatInput").value;
+    if (messageText.trim() !== "" && localUsername && clickedUser) { 
+        // Path for sender and receiver
+        const messagePath = messages/`${localUsername}_${clickedUser}`;
+        const messageObject = {
+            text: messageText,
+            sender: localUsername,
+            receptor: clickedUser,
+            timestamp: Date.now(),
+        };
+
+        // Push message to Firebase
+        const newMessageRef = push(ref(database, messagePath));
+        set(newMessageRef, messageObject)
+            .then(() => {
+                console.log("Message sent successfully.");
+            })
+            .catch((error) => {
+                console.error("Error sending message: ", error);
+            });
+
+        // Clear the input field
+        document.getElementById("chatInput").value = "";
+    } else {
+        console.warn("Message is empty or no chat user selected.");
+    }
+});
+
+
+// Load users on page load
+window.onload = function () {
+    loadUsers();
+};
 
 // Add "Enter" key event to send message
 document.getElementById("chatInput").addEventListener("keydown", (event) => {
@@ -232,6 +228,5 @@ function sendMessage() {
 window.onload = function () {
     loadUsers();
 };
-
 
 
