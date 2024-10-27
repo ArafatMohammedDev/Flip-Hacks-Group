@@ -536,7 +536,7 @@ window.updateProfile = function (profileUrl) {
       <ul class="profile-stats">
 
         <li class="stats-item">
-          <span class="body">Team</span>: ${groupObject.name}
+          <span class="body">Team</span>: ${groupObject ? groupObject.name : 'N/A'}
         </li>
 
         <li class="stats-item">
