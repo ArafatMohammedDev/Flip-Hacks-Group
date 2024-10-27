@@ -167,9 +167,9 @@ function displayMessage(text, type, timestamp) {
     const messageElement = document.createElement("div");
     messageElement.classList.add("message", type);
 
-    // Format the timestamp
+    // Format the timestamp to include seconds
     const date = new Date(timestamp);
-    const options = { hour: '2-digit', minute: '2-digit' };
+    const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
     const formattedTimestamp = date.toLocaleTimeString([], options);
 
     messageElement.innerHTML = `
