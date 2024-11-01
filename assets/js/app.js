@@ -263,11 +263,10 @@ const /** {NodeElement} */ $forkTabBtn = document.querySelector("[data-forked-ta
 
 
 /**
- * Follower
- */
 
-const /** {NodeElement} */ $followerTabBtn = document.querySelector("[data-follower-tab-btn]");
-const /** {NodeElement} */ $followerPanel = document.querySelector("[data-follower-panel]");
+
+const  $followerTabBtn = document.querySelector("[data-follower-tab-btn]");
+const  $followerPanel = document.querySelector("[data-follower-panel]");
 
 const updateFollower = function () {
 
@@ -292,7 +291,7 @@ const updateFollower = function () {
           url
         } = item;
 
-        const /** {NodeElement} */ $followerCard = document.createElement("article");
+        const  $followerCard = document.createElement("article");
         $followerCard.classList.add("card", "follower-card");
 
         $followerCard.innerHTML = `
@@ -329,12 +328,9 @@ const updateFollower = function () {
 $followerTabBtn.addEventListener("click", updateFollower);
 
 
-/**
- * Following
- */
 
-const /** {NodeElement} */ $followingTabBtn = document.querySelector("[data-following-tab-btn]");
-const /** {NodeElement} */ $followingPanel = document.querySelector("[data-following-panel]");
+const  $followingTabBtn = document.querySelector("[data-following-tab-btn]");
+const  $followingPanel = document.querySelector("[data-following-panel]");
 
 const updateFollowing = function () {
 
@@ -359,7 +355,7 @@ const updateFollowing = function () {
           url
         } = item;
 
-        const /** {NodeElement} */ $followingCard = document.createElement("article");
+        const  $followingCard = document.createElement("article");
         $followingCard.classList.add("card", "follower-card");
 
         $followingCard.innerHTML = `
@@ -394,7 +390,7 @@ const updateFollowing = function () {
 }
 
 $followingTabBtn.addEventListener("click", updateFollowing);
-
+*/
 
 
 
@@ -511,7 +507,7 @@ window.updateProfile = function (profileUrl) {
 
     $profileCard.innerHTML = `
       <figure class="${type === "User" ? "avatar-circle" : "avatar-rounded"} img-holder" style="--width: 280; --height: 280">
-        <img src="${avatar_url}" width="280" height="280" alt="${username}" class="img-cover">
+        <img src="" width="280" height="280" alt="" class="img-cover">
       </figure>
 
       ${name ?
@@ -743,14 +739,14 @@ window.onload = async () => {
 
 
 
-
+/*
 $forkTabBtn.addEventListener("click", updateMessages);
 
 document.querySelector("[data-forked-tab-btn]").addEventListener("click", async () => {
     const messages = await fetchMessages(username); // Fetch messages for the current user
     updateMessages(messages); // Update the message tab with the fetched messages
 });
-
+*/
 updateProfile(apiUrl);
 
 
