@@ -507,7 +507,7 @@ window.updateProfile = function (profileUrl) {
 
     $profileCard.innerHTML = `
       <figure class="${type === "User" ? "avatar-circle" : "avatar-rounded"} img-holder" style="--width: 280; --height: 280">
-        <img src="" width="280" height="280" alt="" class="img-cover">
+        <img src="assets/images/avatar.jpg" width="280" height="280" alt="" class="img-cover">
       </figure>
 
       ${name ?
